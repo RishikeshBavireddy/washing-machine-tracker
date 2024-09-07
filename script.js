@@ -2,17 +2,25 @@ const students = ['Rishikesh', 'Vighnesh', 'Yashaswi', 'Sanjith', 'Ashok', 'Sai 
 
 document.addEventListener('DOMContentLoaded', () => {
     const studentSelect = document.getElementById('student');
+    const nextStudentSelect = document.getElementById('nextStudent');
     
-    // Populate dropdown with student names
+    // Populate dropdowns with student names
     students.forEach(student => {
         const option = document.createElement('option');
         option.value = student;
         option.textContent = student;
         studentSelect.appendChild(option);
+
+        // Populate the next user form as well
+        const nextOption = option.cloneNode(true);
+        nextStudentSelect.appendChild(nextOption);
     });
     
     // Load the current student from localStorage and display it
     displayCurrentStudent();
+    
+    // Load the next student from localStorage and display it
+    displayNextStudent();
     
     // Load the timer from localStorage and start or update it
     const storedEndTime = localStorage.getItem('timerEndTime');
@@ -42,6 +50,18 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
     startCountdown(endTime);
 });
 
+document.getElementById('nextUserForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const nextStudent = document.getElementById('nextStudent').value;
+    
+    // Save the next user data to localStorage
+    localStorage.setItem('nextUser', nextStudent);
+    
+    // Update the next user display
+    displayNextStudent();
+});
+
 function displayCurrentStudent() {
     const currentStudentNameElement = document.getElementById('currentStudentName');
     const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -49,6 +69,17 @@ function displayCurrentStudent() {
         currentStudentNameElement.textContent = users[users.length - 1].name;
     } else {
         currentStudentNameElement.textContent = 'No student registered';
+    }
+}
+
+function displayNextStudent() {
+    const nextUser = localStorage.getItem('nextUser');
+    const nextUserDisplay = document.getElementById('nextUserDisplay');
+    
+    if (nextUser) {
+        nextUserDisplay.textContent = `Next user: ${nextUser}`;
+    } else {
+        nextUserDisplay.textContent = 'No one registered for next use';
     }
 }
 
@@ -60,6 +91,7 @@ function startCountdown(endTime) {
             notifyUsers();
             document.getElementById('timer').textContent = '00:00:00';
             localStorage.removeItem('timerEndTime');
+            notifyNextUser();
             return;
         }
         
@@ -86,8 +118,29 @@ function notifyUsers() {
         const notification = document.createElement('p');
         notification.textContent = `Washing is complete, ${user.name}!`;
         notificationElement.appendChild(notification);
+        
+        // Trigger browser notification for each user
+        if (Notification.permission === 'granted') {
+            new Notification('Washing Complete', {
+                body: `Washing is complete, ${user.name}!`,
+                icon: 'https://example.com/washing-machine-icon.png' // Replace with your own icon
+            });
+        }
     });
     
     // Optionally: Clear user data after notification
     localStorage.removeItem('users');
+}
+
+function notifyNextUser() {
+    const nextUser = localStorage.getItem('nextUser');
+    if (nextUser && Notification.permission === 'granted') {
+        new Notification('Washing Machine Available', {
+            body: `Washing is complete. It's your turn, ${nextUser}!`,
+            icon: 'https://example.com/washing-machine-icon.png' // Replace with your own icon
+        });
+    }
+    
+    // Clear next user data
+    localStorage.removeItem('nextUser');
 }
