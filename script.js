@@ -13,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load the current student from localStorage and display it
     displayCurrentStudent();
+    
+    // Load the timer from localStorage and start or update it
+    const storedEndTime = localStorage.getItem('timerEndTime');
+    if (storedEndTime) {
+        const endTime = new Date(storedEndTime).getTime();
+        startCountdown(endTime);
+    }
 });
 
 document.getElementById('userForm').addEventListener('submit', function(event) {
@@ -28,8 +35,11 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
     // Update the current student display
     displayCurrentStudent();
     
-    // Start the countdown timer
-    startCountdown(1.5 * 60 * 60 * 1000); // 1.5 hours in milliseconds
+    // Set timer end time and start countdown
+    const timerDuration = 1.5 * 60 * 60 * 1000; // 1.5 hours in milliseconds
+    const endTime = Date.now() + timerDuration;
+    localStorage.setItem('timerEndTime', new Date(endTime).toISOString());
+    startCountdown(endTime);
 });
 
 function displayCurrentStudent() {
@@ -42,16 +52,14 @@ function displayCurrentStudent() {
     }
 }
 
-function startCountdown(duration) {
-    const endTime = Date.now() + duration;
-    const timerElement = document.getElementById('timer');
-    
+function startCountdown(endTime) {
     function updateTimer() {
         const remaining = endTime - Date.now();
         
         if (remaining <= 0) {
             notifyUsers();
-            timerElement.textContent = '00:00:00';
+            document.getElementById('timer').textContent = '00:00:00';
+            localStorage.removeItem('timerEndTime');
             return;
         }
         
@@ -59,7 +67,7 @@ function startCountdown(duration) {
         const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
         
-        timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById('timer').textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         
         setTimeout(updateTimer, 1000); // Update every second
     }
