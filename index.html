@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Washing Machine Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Washing Machine Tracker</h1>
+    </header>
+    <main>
+        <section id="registration">
+            <h2>Register</h2>
+            <form id="userForm">
+                <label for="student">Select Student:</label>
+                <select id="student" required>
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+                <button type="submit">Register</button>
+            </form>
+        </section>
+        <section id="currentStudent">
+            <h2>Current Student</h2>
+            <p id="currentStudentName">No student registered</p>
+        </section>
+        <section id="countdown">
+            <h2>Time Remaining</h2>
+            <p id="timer">01:30:00</p>
+        </section>
+        <section id="notifications">
+            <!-- Notifications will appear here -->
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
